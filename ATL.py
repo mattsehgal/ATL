@@ -15,38 +15,9 @@ SQUARE = E.SQUARE
 UNTIL = E.UNTIL
 AVOID = E.AVOID  # Not Implemented
 
-# ATL Syntax:
-#  propositions, or's and not's, and path quantifiers
-#   <<subset of players>> (circle)/(square)/(p1 UNTIL p2) are path/temporal quantifiers
-#   Basically: "playing" the logic is A choosing moves for each player, and B (all else but A) chooses moves for each other player
-#   That updates the state- A "wins" if the computation satisfies the formula, otherwise antagonist wins (A wins == True formula)
-#    (circle) is "next state has the formula"
-#    (square) is "all states have the formula"
-#    (p1 UNTIL p2) is "p1 is true for all states until p2 becomes true at least once"
-#  Assuming that SQUARE looks at connections, not including start state (unless can be path'd to)
-#  Assuming that p UNTIL q, when eval'd on a state that has prop q, is true
-
-# Current goal:
-#  Implement simple turn-based representations of games/systems (see train-gate system, deadlocks)
-#  Assuming that each state is controlled by exactly one of the two players
 
 
-'''
-My idea for why I designed this code the way I did:
-    Each state stores the prepositions it satisfies and the player in control of it
-        (assumption that each state has 1 player is perfectly valid, more complex systems
-         can be reduced to have this property)
-        Also has connections (references to states) that can be followed
-            -This could be replaced by a function (connections in_state) that maps states
-             to a list of states
-    Majority of work is done inside of expressions, idea was that each expression could be 
-        "evaluated" or "checked" on a specific state- tried to replicate an inductive tree
-        structure with object-oriented design (base cases are constants and propositions)
-    States also have a color that's used for implementing graph searches in the evaluation parts
-        Color is ignored outside of Exp.check()
-'''
-
-# Here's the initial setup of the train problem
+# Here's the initial setup of the Train-Gate problem
 players = ['t', 'c']
 
 q0 = S.State(['oog'], 't')
@@ -61,12 +32,12 @@ q3.connect([q0, q3])
 
 all_states = [q0, q1, q2, q3]
 
-# Some examples of the first statement on slide 28 of the reference
+# Some examples of the first statement on slide 28 of the reference (Bloisi in bibliography of paper)
 #  {0}[]((out_of_gate ^ ~grant) -> {c}[](out_of_gate))
 #  where [] represents the square path operator, {A} represents that set A of
 #  players is the "protagonist" of the expression
 # The Exp instances below are the constituent expressions that build the given expression
-#   which is represented by total.
+#   which is represented by total
 true = Exp(True, op=CONST)
 oog = Exp('oog')
 grant = Exp('grant')
@@ -79,7 +50,7 @@ total = Exp(impl, op=(SQUARE, []))
 print('_'*31+f'Begin Example'+'_'*31)
 expression_str = '{0}[]((oog ^ ~grant) -> {c}[](oog))'
 print(f'Expression String:\t{expression_str}')
-parsed_total = parse(expression_str)
+parsed_total = parse(expression_str) # recreating the expression "total" by using the parser
 print(f'Parsed Exp Repr:\t{parsed_total}')
 print(f'Total Exp Repr:\t\t{total}')
 # You can see that total and parsed_total are equivalent
