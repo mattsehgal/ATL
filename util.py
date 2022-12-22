@@ -126,7 +126,7 @@ def parse(text):
                     if tempop == E.DIAMOND:
                         # {A}<>Exp == {A}true U exp
                         sub1 = Exp(True, op=E.CONST)
-                        tempop == E.UNTIL
+                        tempop = E.UNTIL
                     else:
                         sub1 = exp_stack.pop()
                     exp_stack.append(Exp(sub1, sub2, op=(tempop, quant_stack.pop())))
